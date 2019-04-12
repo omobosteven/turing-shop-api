@@ -1,0 +1,30 @@
+{
+  "name": "turing-shop-api",
+  "version": "1.0.0",
+  "description": "Turing shop is an e-commerce system which allows users to to easily do their shopping without hassle.",
+  "main": "index.js",
+  "scripts": {
+    "start-dev": "nodemon index.js --exec babel-node",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/omobosteven/turing-shop.git"
+  },
+  "author": "stephen omobo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/omobosteven/turing-shop/issues"
+  },
+  "homepage": "https://github.com/omobosteven/turing-shop#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.3",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.4.3",
+    "babel-core": "^6.26.3",
+    "nodemon": "^1.18.11"
+  }
+}
