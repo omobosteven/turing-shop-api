@@ -1,8 +1,9 @@
-const dotenv = require('dotenv');
+"use strict";
+
+var dotenv = require('dotenv');
 
 dotenv.config();
-
-const config = {
+var config = {
   development: {
     use_env_variable: 'DATABASE_URL',
     dialect: 'mysql'
@@ -17,5 +18,4 @@ const config = {
     dialect: 'mysql'
   }
 };
-
 module.exports = config[process.env.NODE_ENV || 'development'];

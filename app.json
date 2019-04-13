@@ -3,9 +3,17 @@
 
   ],
   "buildpacks": [
-
+    {
+      "url": "heroku/nodejs"
+    }
   ],
   "env": {
+    "JAWSDB_URL": {
+      "required": true
+    },
+    "SECRET_KEY": {
+      "required": true
+    }
   },
   "formation": {
   },
