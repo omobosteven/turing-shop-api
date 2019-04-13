@@ -8,6 +8,11 @@ jobs:
     docker:
       # specify the version you desire here
       - image: circleci/node:8
+      - image: circleci/mysql:5.7.25
+        environment:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+          MYSQL_ROOT_PASSWORD: ''
+          MYSQL_DATABASE: turing_test
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images

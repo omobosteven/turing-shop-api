@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        max: 50
+        max: 60
       }
     },
     credit_card: {
@@ -58,7 +58,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     shipping_region_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      defaultValue: 1
     },
     day_phone: {
       type: DataTypes.STRING,
