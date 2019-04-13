@@ -1,5 +1,5 @@
 import express from 'express';
-import CustomerController from './src/controllers/CustomerController';
+import CustomerController from './controllers/CustomerController';
 
 const app = express();
 const port = 3000;
