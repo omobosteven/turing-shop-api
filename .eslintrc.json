@@ -9,7 +9,7 @@
         "comma-dangle": 0,
         "max-len": [
             "error",
-            { "code": 80 }
+            { "code": 90 }
           ],
           "import/no-unresolved": [
               2,
