@@ -7,7 +7,7 @@ var _CustomerController = _interopRequireDefault(require("./controllers/Customer
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 var app = (0, _express["default"])();
-var port = 3000;
+var port = process.env.PORT || 3000;
 app.use(_express["default"].json());
 app.use(_express["default"].urlencoded({
   extended: false
