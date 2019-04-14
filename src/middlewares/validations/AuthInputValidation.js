@@ -58,6 +58,45 @@ class AuthInputValidation {
       errors: validation.errors.all()
     });
   }
+
+  /**
+   * validate customer input on login
+   *
+   * @param {object} req
+   * @param {object} res
+   * @param {func} next
+   *
+   * @return {void}
+   */
+  static loginInputValidation(req, res, next) {
+    const {
+      email,
+      password
+    } = req.body;
+
+    const data = {
+      email,
+      password
+    };
+
+    const rules = {
+      email: 'required|email',
+      password: 'required|string'
+    };
+
+    const message = {
+      'email.email': 'Please enter a valid :attribute address.'
+    };
+
+    const validation = new Validator(data, rules, message);
+
+    if (validation.passes()) {
+      return next();
+    }
+    return res.status(400).json({
+      errors: validation.errors.all()
+    });
+  }
 }
 
 export default AuthInputValidation;

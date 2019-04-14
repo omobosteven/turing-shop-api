@@ -6,5 +6,7 @@ const customers = express.Router();
 
 customers.post('/register',
   AuthInputValidation.signUpInputValidation, CustomerController.customerSignup);
+customers.post('/login',
+  AuthInputValidation.loginInputValidation, CustomerController.customerLogin);
 
 export default customers;
