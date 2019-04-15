@@ -31,7 +31,7 @@ class CustomerController {
       }
       Customer.create({
         email: email.trim().toLowerCase(),
-        name: `${firstname.trim().toLowerCase()} ${lastname.trim().toLowerCase()}`,
+        name: `${firstname.trim()} ${lastname.trim()}`,
         password: Util.hashPassword(password)
       }).then((customer) => {
         const token = jwt.sign({
