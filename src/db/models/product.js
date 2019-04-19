@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     display: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.SMALLINT(6),
       allowNull: true,
       defaultValue: 0
     }
@@ -48,7 +48,11 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Product.associate = (models) => {
-    // associations can be defined here
+    Product.belongsToMany(models.AttributeValue,
+      { through: 'ProductAttribute', foreignKey: 'product_id', as: 'attributes' });
+
+    Product.belongsToMany(models.Category,
+      { through: 'ProductCategory', foreignKey: 'product_id', as: 'category' });
   };
 
   return Product;

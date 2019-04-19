@@ -1,6 +1,6 @@
 import db from '../db/models';
 
-const { Product } = db;
+const { Product, AttributeValue, Category } = db;
 
 class ProductController {
   /**
@@ -34,6 +34,53 @@ class ProductController {
             currentPage: page,
           },
           data: products
+        });
+      })
+      .catch(next);
+  }
+
+  /**
+   * Get all products
+   * @param {*} req - query parameters
+   * @param {*} res - Response object
+   * @param {*} next - Next function
+   * @returns {object} product - Product object
+   */
+  static getProduct(req, res, next) {
+    Product.findOne({
+      include: [
+        {
+          model: AttributeValue,
+          as: 'attributes',
+          attributes: ['value'],
+          through: {
+            attributes: []
+          }
+        },
+        {
+          model: Category,
+          as: 'category',
+          attributes: [
+            'name',
+            'description'
+          ],
+          through: {
+            attributes: []
+          }
+        }
+      ],
+      where: {
+        product_id: req.params.id
+      }
+    })
+      .then((product) => {
+        if (!product) {
+          return res.status(404).json({
+            message: 'Sorry, product is unavailable'
+          });
+        }
+        return res.status(200).json({
+          data: product
         });
       })
       .catch(next);
