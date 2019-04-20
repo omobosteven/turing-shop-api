@@ -4,13 +4,21 @@ import db from '../db/models';
 import app from '../index';
 
 chai.use(chaiHttp);
-const { Product } = db;
+const { Product, Department, Category } = db;
 
 const doBeforeEach = () => {
   beforeEach((done) => {
     db.sequelize.sync({
       force: true
     }).then(() => {
+      Department.create({
+        name: 'Regional'
+      }).then((department) => {
+        Category.create({
+          name: 'French',
+          department_id: department.department_id
+        });
+      });
       Product.create({
         name: 'Centaur',
         description: 'There were never any lady centaurs.',

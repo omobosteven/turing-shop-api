@@ -11,10 +11,48 @@ class ProductController {
    * @returns {object} product - Product object
    */
   static getProducts(req, res, next) {
-    const { page, limit, order } = req.query;
+    const {
+      page, limit, order, category, department
+    } = req.query;
     const offset = parseInt((page - 1), 10) * limit;
 
+    let where;
+
+    if (category) {
+      where = {
+        category_id: category
+      };
+    }
+
+    if (department) {
+      where = {
+        department_id: department
+      };
+    }
+
+    if (category && department) {
+      where = {
+        category_id: category,
+        department_id: department
+      };
+    }
+
+    const queryBuilder = {
+      include: [
+        {
+          model: Category,
+          as: 'category',
+          attributes: ['name'],
+          through: {
+            attributes: [],
+          },
+        }
+      ]
+    };
+
+    queryBuilder.include[0].where = where;
     Product.findAndCountAll({
+      ...queryBuilder,
       order: [
         ['product_id', order]
       ],
