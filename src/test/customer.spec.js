@@ -7,6 +7,7 @@ import Util from '../utilities/Util';
 
 const { Customer } = db;
 const { newUser, testUser } = customerFixtures;
+let userToken;
 
 chai.use(chaiHttp);
 
@@ -73,10 +74,11 @@ describe('Customer Register', () => {
         .post('/api/v1/customers/login')
         .set('Content-Type', 'application/json')
         .send({
-          email: testUser.email,
-          password: testUser.password
+          email: 'test@test.com',
+          password: 'password'
         })
         .end((err, res) => {
+          userToken = res.body.data.token;
           expect(res.status).to.equal(200);
           expect(res.body.message).to.equal('Login successfully');
           expect(res.body.data).to.have.property('token');
@@ -127,5 +129,74 @@ describe('Customer Register', () => {
           done();
         });
     });
+
+    it('should return the details of a user', (done) => {
+      chai.request(app)
+        .get('/api/v1/customers/profile')
+        .set('Content-Type', 'application/json')
+        .set('Authorization', userToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body.data.email).to.equal('test@test.com');
+          done();
+        });
+    });
+
+    it('should return error if token is not provider for profile update', (done) => {
+      chai.request(app)
+        .put('/api/v1/customers/profile')
+        .set('Content-Type', 'application/json')
+        .send({})
+        .end((err, res) => {
+          expect(res.status).to.equal(401);
+          expect(res.body.message).to
+            .equal('You need to be logged in to perform this action');
+          done();
+        });
+    });
+
+    it('should return error if token is not valid for profile update', (done) => {
+      chai.request(app)
+        .put('/api/v1/customers/profile')
+        .set('Content-Type', 'application/json')
+        .set('Authorization', '1234')
+        .send({})
+        .end((err, res) => {
+          expect(res.status).to.equal(401);
+          expect(res.body.message).to
+            .equal('Sorry, authorization was not successful');
+          done();
+        });
+    });
+
+    it('should update when valid inputs are entered', (done) => {
+      chai.request(app)
+        .put('/api/v1/customers/profile')
+        .set('Content-Type', 'application/json')
+        .set('Authorization', userToken)
+        .send({})
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body.message).to.equal('Profile successfully updated');
+          done();
+        });
+    });
+
+    it('should return error if invalid details are supplied for profile update',
+      (done) => {
+        chai.request(app)
+          .put('/api/v1/customers/profile')
+          .set('Content-Type', 'application/json')
+          .set('Authorization', userToken)
+          .send({
+            shippingregion: 45
+          })
+          .end((err, res) => {
+            expect(res.status).to.equal(400);
+            expect(res.body.errors.shippingregion[0]).to
+              .equal('The shipping region must be between 1 and 4');
+            done();
+          });
+      });
   });
 });
