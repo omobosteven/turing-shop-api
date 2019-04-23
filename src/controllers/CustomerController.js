@@ -36,7 +36,9 @@ class CustomerController {
       }).then((customer) => {
         const token = jwt.sign({
           customer_id: customer.customer_id,
-          name: customer.name
+          name: customer.name,
+          email: customer.email,
+          shipping_region_id: customer.shipping_region_id
         }, secret, { expiresIn: '24h' });
 
         return res.status(201).json({
@@ -73,7 +75,9 @@ class CustomerController {
       if (bcrypt.compareSync(password, customer.password)) {
         const token = jwt.sign({
           customer_id: customer.customer_id,
-          name: customer.name
+          name: customer.name,
+          email: customer.email,
+          shipping_region_id: customer.shipping_region_id
         }, secret, { expiresIn: '24h' });
 
         return res.status(200).json({
@@ -88,6 +92,72 @@ class CustomerController {
         message: 'email or password is incorrect'
       });
     }).catch(next);
+  }
+
+  /**
+   * Get a customer's profile
+   * @param {*} req - query parameters
+   * @param {*} res - Response object
+   * @param {*} next - Next function
+   * @returns {object} user - User object
+   */
+  static customerDetails(req, res, next) {
+    const { customer_id } = req.decoded; // eslint-disable-line
+
+    Customer.findOne({
+      where: {
+        customer_id
+      },
+      attributes: { exclude: ['password'] }
+    })
+      .then(customer => res.status(200).json({
+        data: customer
+      })).catch(next);
+  }
+
+  /**
+   * Update customer's profile
+   * @param {*} req - query parameters
+   * @param {*} res - Response object
+   * @param {*} next - Next function
+   * @returns {object} user - User object
+   */
+  static updateCustomerDetails(req, res, next) {
+    const { customer_id } = req.decoded; // eslint-disable-line
+    const {
+      name, creditcard,
+      address1, address2, city, region,
+      postalcode, country, shippingregion,
+      dayphone, evephone, mobphone
+    } = req.body;
+
+    Customer.findOne({
+      where: {
+        customer_id
+      },
+      attributes: { exclude: ['password'] }
+    })
+      .then((customer) => {
+        customer.update({
+          name: name || customer.name,
+          credit_card: creditcard || customer.credit_card,
+          address_1: address1 || customer.address_1,
+          address_2: address2 || customer.address_2,
+          city: city || customer.city,
+          region: region || customer.region,
+          postal_code: postalcode || customer.postal_code,
+          country: country || customer.country,
+          shipping_region_id: shippingregion || customer.shipping_region_id,
+          day_phone: dayphone || customer.day_phone,
+          eve_phone: evephone || customer.eve_phone,
+          mob_phone: mobphone || customer.mob_phone
+        })
+          .then(updatedCustomer => res.status(200).json({
+            message: 'Profile successfully updated',
+            data: updatedCustomer
+          }));
+      })
+      .catch(next);
   }
 }
 
