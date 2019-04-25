@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       autoIncrement: true
     },
-    department_id: {
+    customer_id: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
@@ -35,7 +35,15 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Review.associate = (models) => {
+    Review.belongsTo(models.Customer, {
+      foreignKey: 'customer_id',
+      as: 'customer'
+    });
 
+    Review.belongsTo(models.Product, {
+      foreignKey: 'product_id',
+      as: 'product'
+    });
   };
 
   return Review;
