@@ -34,6 +34,40 @@ class ReviewInputValidation {
       errors: validation.errors.all()
     });
   }
+
+  /**
+ * validate review input parameters
+ *
+ * @param {object} req
+ * @param {object} res
+ * @param {func} next
+ *
+ * @return {void}
+ */
+  static updateReviewValidation(req, res, next) {
+    const {
+      review, rating
+    } = req.body;
+
+    const data = {
+      review, rating
+    };
+
+    const rules = {
+      review: 'string',
+      rating: 'in:1,2,3,4,5'
+    };
+
+    const validation = new Validator(data, rules);
+
+    if (validation.passes()) {
+      return next();
+    }
+
+    return res.status(400).json({
+      errors: validation.errors.all()
+    });
+  }
 }
 
 export default ReviewInputValidation;
