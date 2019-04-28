@@ -16,5 +16,6 @@ products.post('/:id/reviews',
   ReviewInputValidation.reviewValidation, ReviewController.createReview);
 products.put('/:id/reviews/:reviewId',
   ReviewInputValidation.updateReviewValidation, ReviewController.updateReview);
+products.delete('/:id/reviews/:reviewId', ReviewController.deleteReview);
 
 export default products;
