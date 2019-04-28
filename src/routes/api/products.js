@@ -14,5 +14,7 @@ products.use(Authenticate.auth);
 
 products.post('/:id/reviews',
   ReviewInputValidation.reviewValidation, ReviewController.createReview);
+products.put('/:id/reviews/:reviewId',
+  ReviewInputValidation.updateReviewValidation, ReviewController.updateReview);
 
 export default products;
