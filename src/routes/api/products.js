@@ -9,6 +9,8 @@ const products = express.Router();
 
 products.get('/', QueryValidation.queryValidation, ProductController.getProducts);
 products.get('/:id', ProductController.getProduct);
+products.get('/:id/reviews',
+  QueryValidation.queryValidation, ReviewController.getReviews);
 
 products.use(Authenticate.auth);
 
