@@ -1,6 +1,6 @@
 import db from '../db/models';
 
-const { Review, Product } = db;
+const { Review, Product, Customer } = db;
 
 class ReviewController {
   /**
@@ -137,6 +137,63 @@ class ReviewController {
           existingReview.destroy().then(() => res.status(200).json({
             message: 'Review deleted successfully'
           }));
+        });
+      })
+      .catch(next);
+  }
+
+  /**
+   * Get all reviews for a product
+   * @param {*} req - query parameters
+   * @param {*} res - Response object
+   * @param {*} next - Next function
+   * @returns {object} review - Review object
+   */
+  static getReviews(req, res, next) {
+    const { page, limit, order } = req.query;
+    const offset = parseInt((page - 1), 10) * limit;
+    const { id } = req.params;
+
+    Product.findByPk(parseInt(id, 10))
+      .then((product) => {
+        if (!product) {
+          return res.status(404).json({
+            message: 'Sorry, product is not available'
+          });
+        }
+
+        Review.findAndCountAll({
+          where: {
+            product_id: id
+          },
+          attributes: { exclude: ['customer_id'] },
+          include: [{
+            model: Customer,
+            as: 'customer',
+            attributes: ['name'],
+          }],
+          order: [
+            ['review_id', order]
+          ],
+          offset,
+          limit,
+        }).then((review) => {
+          Review.sum('rating').then((total) => {
+            const { count } = review;
+            const pageCount = Math.ceil(count / limit);
+            const avg = total / count;
+            return res.status(200).json({
+              paginationMeta: {
+                pageCount,
+                totalCount: count,
+                outputCount: review.rows.length,
+                pageSize: limit,
+                currentPage: page,
+              },
+              average_rating: avg,
+              data: review.rows
+            });
+          });
         });
       })
       .catch(next);
