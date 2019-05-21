@@ -8,19 +8,12 @@ import passport from '../../db/config/oauth';
 
 const customers = express.Router();
 
-customers.post('/register',
+customers.post('/',
   AuthInputValidation.signUpInputValidation, CustomerController.customerSignup);
 customers.post('/login',
   AuthInputValidation.loginInputValidation, CustomerController.customerLogin);
 
-customers.get('/google', passport.authenticate('google', {
-  scope: ['profile', 'email']
-}));
-
-customers.get('/oauth/google', passport.authenticate('google'),
-  CustomerSocialAuthController.response);
-
-customers.get('/facebook', passport.authenticate('facebook', {
+customers.post('/facebook', passport.authenticate('facebook', {
   scope: ['public_profile', 'email']
 }));
 
@@ -30,9 +23,9 @@ customers.get('/oauth/facebook',
 
 customers.use(Authenticate.auth);
 
-customers.get('/profile', CustomerController.customerDetails);
-customers.put('/profile',
-  ProfileInputValidation.profileUpdateValidation,
-  CustomerController.updateCustomerDetails);
+customers.put('/creditCard',
+  ProfileInputValidation.creditCardValidation, CustomerController.updateCreditCard);
+customers.put('/address',
+  ProfileInputValidation.addressValidation, CustomerController.updateAddress);
 
 export default customers;

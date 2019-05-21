@@ -32,37 +32,38 @@ describe('Customer Register', () => {
   describe('Test for customer signup', () => {
     it('should register user if inputs are valid', (done) => {
       chai.request(app)
-        .post('/api/v1/customers/register')
+        .post('/customers')
         .set('Content-Type', 'application/json')
         .send(newUser)
         .end((err, res) => {
           expect(res.status).to.equal(201);
-          expect(res.body.message).to.equal('Account created successfully');
-          expect(res.body.data).to.have.property('token');
+          expect(res.body.customer.schema.name).to.equal(newUser.name);
+          expect(res.body).to.have.property('accessToken');
           done();
         });
     });
 
     it('should return error if user already exist', (done) => {
       chai.request(app)
-        .post('/api/v1/customers/register')
+        .post('/customers')
         .set('Content-Type', 'application/json')
         .send(testUser)
         .end((err, res) => {
           expect(res.status).to.equal(409);
-          expect(res.body.message).to.equal('User already exist');
+          expect(res.body.error.code).to.equal('USR_04');
+          expect(res.body.error.message).to.equal('The email already exists');
           done();
         });
     });
 
     it('should throw an error if fields are invalid', (done) => {
       chai.request(app)
-        .post('/api/v1/customers/register')
+        .post('/customers')
         .set('Content-Type', 'application/json')
         .send({})
         .end((err, res) => {
           expect(res.status).to.equal(400);
-          expect(res.body.errors.email[0]).to.equal('The email field is required.');
+          expect(res.body.error.field).to.equal('email, name, password');
           done();
         });
     });
@@ -71,113 +72,121 @@ describe('Customer Register', () => {
   describe('Test for customer login', () => {
     it('should login a user successfully', (done) => {
       chai.request(app)
-        .post('/api/v1/customers/login')
+        .post('/customers/login')
         .set('Content-Type', 'application/json')
         .send({
           email: 'test@test.com',
           password: 'password'
         })
         .end((err, res) => {
-          userToken = res.body.data.token;
+          userToken = res.body.accessToken;
           expect(res.status).to.equal(200);
-          expect(res.body.message).to.equal('Login successfully');
-          expect(res.body.data).to.have.property('token');
+          expect(res.body).to.have.property('accessToken');
           done();
         });
     });
 
     it('should return error if user is not registered', (done) => {
       chai.request(app)
-        .post('/api/v1/customers/login')
+        .post('/customers/login')
         .set('Content-Type', 'application/json')
         .send({
           email: 'notregistered@gmail.com',
           password: testUser.password
         })
         .end((err, res) => {
-          expect(res.status).to.equal(404);
-          expect(res.body.message)
-            .to.equal('Sorry, no account is registered for this user');
+          expect(res.body.error.status)
+            .to.equal(404);
+          expect(res.body.error.message)
+            .to.equal("The email doesn't exist");
           done();
         });
     });
 
     it('should return error if wrong password is entered', (done) => {
       chai.request(app)
-        .post('/api/v1/customers/login')
+        .post('/customers/login')
         .set('Content-Type', 'application/json')
         .send({
           email: testUser.email,
           password: 'wrongpass'
         })
         .end((err, res) => {
-          expect(res.status).to.equal(400);
-          expect(res.body.message)
-            .to.equal('email or password is incorrect');
+          expect(res.body.error.status).to.equal(400);
+          expect(res.body.error.message)
+            .to.equal('Email or Password is invalid');
           done();
         });
     });
 
     it('should return error if no details are entered', (done) => {
       chai.request(app)
-        .post('/api/v1/customers/login')
+        .post('/customers/login')
         .set('Content-Type', 'application/json')
         .send({})
         .end((err, res) => {
           expect(res.status).to.equal(400);
-          expect(res.body.errors.email[0]).to.equal('The email field is required.');
+          expect(res.body.error.message).to.equal('The field(s) are/is required.');
           done();
         });
     });
 
     it('should return the details of a user', (done) => {
       chai.request(app)
-        .get('/api/v1/customers/profile')
+        .get('/customer')
         .set('Content-Type', 'application/json')
-        .set('Authorization', userToken)
+        .set('USER-KEY', userToken)
         .end((err, res) => {
           expect(res.status).to.equal(200);
-          expect(res.body.data.email).to.equal('test@test.com');
+          expect(res.body.email).to.equal('test@test.com');
           done();
         });
     });
 
     it('should return error if token is not provider for profile update', (done) => {
       chai.request(app)
-        .put('/api/v1/customers/profile')
+        .put('/customer')
         .set('Content-Type', 'application/json')
         .send({})
         .end((err, res) => {
           expect(res.status).to.equal(401);
-          expect(res.body.message).to
-            .equal('You need to be logged in to perform this action');
+          expect(res.body.error.message).to
+            .equal('Access Unauthorized');
           done();
         });
     });
 
     it('should return error if token is not valid for profile update', (done) => {
       chai.request(app)
-        .put('/api/v1/customers/profile')
+        .put('/customer')
         .set('Content-Type', 'application/json')
-        .set('Authorization', '1234')
+        .set('USER-KEY', '1234')
         .send({})
         .end((err, res) => {
           expect(res.status).to.equal(401);
-          expect(res.body.message).to
-            .equal('Sorry, authorization was not successful');
+          expect(res.body.error.message).to
+            .equal('The apikey is invalid.');
           done();
         });
     });
 
     it('should update when valid inputs are entered', (done) => {
       chai.request(app)
-        .put('/api/v1/customers/profile')
+        .put('/customers/address')
         .set('Content-Type', 'application/json')
-        .set('Authorization', userToken)
-        .send({})
-        .end((err, res) => {
+        .set('USER-KEY', userToken)
+        .send({
+          address_1: '1 aminiu street',
+          address_2: '235 Ikorodu road',
+          city: 'maryland',
+          region: 'lagos',
+          postal_code: '100112',
+          country: 'nigeria',
+          shipping_region_id: '4'
+        })
+        .end((err, res) => { 
           expect(res.status).to.equal(200);
-          expect(res.body.message).to.equal('Profile successfully updated');
+          expect(res.body.address_1).to.equal('1 aminiu street');
           done();
         });
     });
@@ -185,16 +194,12 @@ describe('Customer Register', () => {
     it('should return error if invalid details are supplied for profile update',
       (done) => {
         chai.request(app)
-          .put('/api/v1/customers/profile')
+          .put('/customer')
           .set('Content-Type', 'application/json')
-          .set('Authorization', userToken)
-          .send({
-            shippingregion: 45
-          })
+          .set('USER-KEY', userToken)
+          .send({})
           .end((err, res) => {
             expect(res.status).to.equal(400);
-            expect(res.body.errors.shippingregion[0]).to
-              .equal('The shipping region must be between 1 and 4');
             done();
           });
       });

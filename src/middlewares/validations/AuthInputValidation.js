@@ -12,51 +12,86 @@ class AuthInputValidation {
    * @return {void}
    */
   static signUpInputValidation(req, res, next) {
-    const {
-      email,
-      firstname,
-      lastname,
+    let {
+      email, // eslint-disable-line
+      name,
       password
     } = req.body;
 
+    if (name) {
+      name = name.toString();
+    }
+
+    if (password) {
+      password = password.toString();
+    }
+
     const data = {
       email,
-      firstname,
-      lastname,
+      name,
       password
     };
 
     const rules = {
       email: 'required|email',
-      firstname: 'required|string|max:24',
-      lastname: 'required|string|max:24',
-      password: 'required|string|min:8|max:50'
+      name: 'required|max:50',
+      password: 'required|max:60'
     };
 
-    const message = {
-      'email.email': 'Please enter a valid :attribute address.',
-      'min.password':
-      ':attribute is too short. should be more than :min characters.',
-      'max.password':
-      ':attribute is too long.',
-      'min.firstname':
-      ':attribute is too short. Min length is :min characters.',
-      'max.firstname':
-      ':attribute is too long. Max length is :max characters.',
-      'min.lastname':
-      ':attribute is too short. Min length is :min characters.',
-      'max.lastname':
-      ':attribute is too long. Max length is :max characters.',
-    };
-
-    const validation = new Validator(data, rules, message);
+    const validation = new Validator(data, rules);
 
     if (validation.passes()) {
       return next();
     }
-    return res.status(400).json({
-      errors: validation.errors.all()
-    });
+
+    const { errors } = validation.errors;
+
+    if (errors) {
+      if (errors.email && errors.email[0] === 'The email format is invalid.') {
+        return res.status(400).json({
+          error: {
+            status: 400,
+            code: 'USR_03',
+            message: 'The email is invalid',
+            field: 'email'
+          }
+        });
+      }
+
+
+      if (errors.name
+        && errors.name[0] === 'The name may not be greater than 50 characters.') {
+        return res.status(400).json({
+          error: {
+            status: 400,
+            code: 'USR_07',
+            message: 'This is too long name',
+            field: 'name'
+          }
+        });
+      }
+
+      if (errors.password
+        && errors.password[0] === 'The password may not be greater than 60 characters.') {
+        return res.status(400).json({
+          error: {
+            status: 400,
+            code: 'USR_07',
+            message: 'This is too long password',
+            field: 'password'
+          }
+        });
+      }
+
+      return res.status(400).json({
+        error: {
+          status: 400,
+          code: 'USR_02',
+          message: 'The field(s) are/is required.',
+          field: `${Object.keys(errors).join(', ')}`
+        }
+      });
+    }
   }
 
   /**
@@ -69,8 +104,8 @@ class AuthInputValidation {
    * @return {void}
    */
   static loginInputValidation(req, res, next) {
-    const {
-      email,
+    let {
+      email, //eslint-disable-line
       password
     } = req.body;
 
@@ -79,22 +114,30 @@ class AuthInputValidation {
       password
     };
 
+    if (password) {
+      password = password.toString();
+    }
+
     const rules = {
-      email: 'required|email',
-      password: 'required|string'
+      email: 'required',
+      password: 'required'
     };
 
-    const message = {
-      'email.email': 'Please enter a valid :attribute address.'
-    };
-
-    const validation = new Validator(data, rules, message);
+    const validation = new Validator(data, rules);
 
     if (validation.passes()) {
       return next();
     }
+
+    const { errors } = validation.errors;
+
     return res.status(400).json({
-      errors: validation.errors.all()
+      error: {
+        status: 400,
+        code: 'USR_02',
+        message: 'The field(s) are/is required.',
+        field: `${Object.keys(errors).join(', ')}`
+      }
     });
   }
 }

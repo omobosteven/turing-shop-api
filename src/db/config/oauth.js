@@ -1,6 +1,5 @@
 import passport from 'passport';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import CustomerSocialAuthController from '../../controllers/CustomerSocialAuthController';
 
 
@@ -19,11 +18,5 @@ passport.use(
     profileFields: ['id', 'displayName', 'email']
   }, CustomerSocialAuthController.passportCallback)
 );
-
-passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: process.env.GOOGLE_CALLBACK_URL,
-}, CustomerSocialAuthController.passportCallback));
 
 export default passport;

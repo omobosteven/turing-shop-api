@@ -58,19 +58,29 @@ class CustomerSocialAuthController {
         {
           customer_id: data.customer_id,
           name: data.name,
+          email: data.email
         }, secret, { expiresIn: '24h' }
       );
 
-      if (req.user.created) {
-        return res.status(201).json({
-          message: 'Account created successfully',
-          data: {
-            token
-          }
-        });
-      }
+      const {
+        customer_id, name, email: customer_email, credit_card, address_1, address_2, // eslint-disable-line
+        city, region, postal_code, country, shipping_region_id, day_phone, // eslint-disable-line
+        eve_phone, mob_phone // eslint-disable-line
+      } = data;
 
-      return res.status(200).json({ message: 'Authentication successful' });
+      const customerDetails = {
+        customer_id, name, email: customer_email, credit_card, address_1, address_2, // eslint-disable-line
+        city, region, postal_code, country, shipping_region_id, day_phone, // eslint-disable-line
+        eve_phone, mob_phone }; // eslint-disable-line
+
+
+      return res.status(200).json({
+        customer: {
+          schema: customerDetails
+        },
+        accessToken: `Bearer ${token}`,
+        expires_in: '24h'
+      });
     }).catch(next);
   }
 

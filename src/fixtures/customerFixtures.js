@@ -1,14 +1,12 @@
 const customerFixtures = {
   newUser: {
-    firstname: 'Stephen',
-    lastname: 'Test',
+    name: 'stephen test',
     password: 'password',
     email: 'stevenomobo@gmail.com',
   },
   testUser: {
     email: 'test@test.com',
-    firstname: 'luke',
-    lastname: 'cage',
+    name: 'test test',
     password: 'password'
   }
 };

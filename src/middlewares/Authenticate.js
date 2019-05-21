@@ -21,12 +21,19 @@ class Authenticate {
  * @param {func} next
  */
   static auth(req, res, next) {
-    const token = req.headers.authorization;
+    let token = req.headers['user-key'];
+
     if (token) {
+      token = token.slice(7, token.length);
       Authenticate.verifyUser(req, res, next, token);
     } else {
       return res.status(401).json({
-        message: 'You need to be logged in to perform this action'
+        error: {
+          status: 401,
+          code: 'AUT_02',
+          message: 'Access Unauthorized',
+          field: 'NoAuth'
+        }
       });
     }
   }
@@ -45,7 +52,12 @@ class Authenticate {
     jwt.verify(token, secret, (err, decoded) => {
       if (err) {
         return res.status(401).json({
-          message: 'Sorry, authorization was not successful'
+          error: {
+            status: 401,
+            code: 'AUT_02',
+            message: 'The apikey is invalid.',
+            field: 'API-KEY'
+          }
         });
       }
       Customer.findByPk(decoded.customer_id)
@@ -60,8 +72,11 @@ class Authenticate {
             return next();
           }
           if (!customer) {
-            return res.status(401).json({
-              message: 'User not found.'
+            return res.status(404).json({
+              status: 404,
+              code: 'CUS_01',
+              message: 'Customer not found.',
+              field: 'NoCustomer'
             });
           }
         })
