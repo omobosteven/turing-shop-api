@@ -35,7 +35,7 @@ class DepartmentController {
             error: {
               status: 404,
               code: 'DEP_02',
-              message: 'Don\'exist department with this ID.',
+              message: 'Don\'t exist department with this ID.',
               field: 'department_id'
             }
           });
