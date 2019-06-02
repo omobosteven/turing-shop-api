@@ -30,42 +30,37 @@ class ReviewInputValidation {
       return next();
     }
 
-    return res.status(400).json({
-      errors: validation.errors.all()
-    });
-  }
+    const { errors } = validation.errors;
 
-  /**
- * validate review input parameters
- *
- * @param {object} req
- * @param {object} res
- * @param {func} next
- *
- * @return {void}
- */
-  static updateReviewValidation(req, res, next) {
-    const {
-      review, rating
-    } = req.body;
+    if (errors.review && errors.review[0] === 'The review must be a string.') {
+      return res.status(400).send({
+        error: {
+          status: 400,
+          code: 'USR_03',
+          message: 'The review field is invalid',
+          field: 'review'
+        }
+      });
+    }
 
-    const data = {
-      review, rating
-    };
-
-    const rules = {
-      review: 'string',
-      rating: 'in:1,2,3,4,5'
-    };
-
-    const validation = new Validator(data, rules);
-
-    if (validation.passes()) {
-      return next();
+    if (errors.rating && errors.rating[0] === 'The selected rating is invalid.') {
+      return res.status(400).send({
+        error: {
+          status: 400,
+          code: 'USR_03',
+          message: 'The rating field is invalid, use between 1 and 5',
+          field: 'rating'
+        }
+      });
     }
 
     return res.status(400).json({
-      errors: validation.errors.all()
+      error: {
+        status: 400,
+        code: 'USR_02',
+        message: 'The field(s) are/is required.',
+        field: `${Object.keys(errors).join(', ')}`
+      }
     });
   }
 }

@@ -9,17 +9,15 @@ class QueryValidation {
    * @return {void}
    */
   static queryValidation(req, res, next) {
-    let { limit, page } = req.query;
+    let { limit, page, description_length } = req.query;
     page = parseInt(page, 10);
     limit = parseInt(limit, 10);
-    let order = req.query.order || 'DESC';
-    order = order.toUpperCase();
-    if (order !== 'DESC' && order !== 'ASC') {
-      order = 'DESC';
-    }
+    description_length = parseInt(description_length, 10);
     req.query.page = (page && Number.isInteger(page) && page > 0) ? page : 1;
     req.query.limit = (limit && Number.isInteger(limit) && limit > 0) ? limit : 15;
-    req.query.order = order;
+    req.query.description_length = (description_length
+      && Number.isInteger(description_length) && description_length > 0)
+      ? description_length : 200;
     next();
   }
 }
