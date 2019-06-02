@@ -234,7 +234,7 @@ class ProductController {
    * @param {*} req - query parameters
    * @param {*} res - Response object
    * @param {*} next - Next function
-   * @returns {object} product - Product object
+   * @returns {object} reviews - Reviews object
    */
   static async getProductReviews(req, res, next) {
     const { product_id } = req.params;
@@ -257,7 +257,7 @@ class ProductController {
    * @param {*} req - query parameters
    * @param {*} res - Response object
    * @param {*} next - Next function
-   * @returns {object} product - Product object
+   * @returns {object} review - Review object
    */
   static async createProductReview(req, res, next) {
     const { customer_id } = req.decoded;
