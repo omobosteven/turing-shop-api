@@ -69,7 +69,7 @@ class AttributeController {
    * @param {*} next - Next function
    * @returns {object} attribute - Attribute object
    */
-  static getAttributesOfproduct(req, res, next) {
+  static getAttributesOfProduct(req, res, next) {
     const { product_id } = req.params;
 
     sequelize
