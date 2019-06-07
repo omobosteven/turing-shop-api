@@ -6,6 +6,7 @@ import departments from './departments';
 import categories from './categories';
 import attributes from './attributes';
 import taxes from './taxes';
+import shipping from './shipping';
 
 const api = express.Router();
 
@@ -16,5 +17,6 @@ api.use('/departments', departments);
 api.use('/categories', categories);
 api.use('/attributes', attributes);
 api.use('/taxes', taxes);
+api.use('/shipping', shipping);
 
 export default api;
